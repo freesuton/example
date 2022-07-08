@@ -25,7 +25,7 @@ const clientSideEmotionCache = createEmotionCache();
 //   Component: NextPageWithLayout;
 // }
 
-function TokyoApp(props: TokyoAppProps) {
+function TokyoApp(props: any) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   const getLayout = Component.getLayout ?? ((page) => page);
 
