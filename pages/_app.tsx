@@ -1,7 +1,7 @@
-import type { ReactElement, ReactNode } from 'react';
+// import type { ReactElement, ReactNode } from 'react';
 
-import type { NextPage } from 'next';
-import type { AppProps } from 'next/app';
+// import type { NextPage } from 'next';
+// import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import Router from 'next/router';
 import nProgress from 'nprogress';
@@ -16,14 +16,14 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 
 const clientSideEmotionCache = createEmotionCache();
 
-type NextPageWithLayout = NextPage & {
-  getLayout?: (page: ReactElement) => ReactNode;
-};
+// type NextPageWithLayout = NextPage & {
+//   getLayout?: (page: ReactElement) => ReactNode;
+// };
 
-interface ProperAppProps extends AppProps {
-  emotionCache?: EmotionCache;
-  Component: NextPageWithLayout;
-}
+// interface ProperAppProps extends AppProps {
+//   emotionCache?: EmotionCache;
+//   Component: NextPageWithLayout;
+// }
 
 function TokyoApp(props: TokyoAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
