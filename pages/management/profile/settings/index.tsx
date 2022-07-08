@@ -1,16 +1,16 @@
 import { useState, ChangeEvent } from 'react';
 import Head from 'next/head';
 import SidebarLayout from '@/layouts/SidebarLayout';
-import PageHeader from '@/content/Management/Users/settings/PageHeader';
+// import PageHeader from '@/content/Management/Users/settings/PageHeader';
 import PageTitleWrapper from '@/components/PageTitleWrapper';
 import { Container, Tabs, Tab, Grid } from '@mui/material';
 import Footer from '@/components/Footer';
 import { styled } from '@mui/material/styles';
 
-import ActivityTab from '@/content/Management/Users/settings/ActivityTab';
-import EditProfileTab from '@/content/Management/Users/settings/EditProfileTab';
-import NotificationsTab from '@/content/Management/Users/settings/NotificationsTab';
-import SecurityTab from '@/content/Management/Users/settings/SecurityTab';
+// import ActivityTab from '@/content/Management/Users/settings/ActivityTab';
+// import EditProfileTab from '@/content/Management/Users/settings/EditProfileTab';
+// import NotificationsTab from '@/content/Management/Users/settings/NotificationsTab';
+// import SecurityTab from '@/content/Management/Users/settings/SecurityTab';
 
 const TabsWrapper = styled(Tabs)(
   () => `
@@ -40,7 +40,7 @@ function ManagementUserSettings() {
         <title>User Settings - Applications</title>
       </Head>
       <PageTitleWrapper>
-        <PageHeader />
+        {/* <PageHeader /> */}
       </PageTitleWrapper>
       <Container maxWidth="lg">
         <Grid
@@ -65,10 +65,10 @@ function ManagementUserSettings() {
             </TabsWrapper>
           </Grid>
           <Grid item xs={12}>
-            {currentTab === 'activity' && <ActivityTab />}
+            {/* {currentTab === 'activity' && <ActivityTab />}
             {currentTab === 'edit_profile' && <EditProfileTab />}
             {currentTab === 'notifications' && <NotificationsTab />}
-            {currentTab === 'security' && <SecurityTab />}
+            {currentTab === 'security' && <SecurityTab />} */}
           </Grid>
         </Grid>
       </Container>
