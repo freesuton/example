@@ -43,7 +43,7 @@ function Header() {
   const theme = useTheme();
 
   return (
-    <HeaderWrapper
+<HeaderWrapper
       display="flex"
       alignItems="center"
       sx={{
@@ -73,6 +73,23 @@ function Header() {
       <Box display="flex" alignItems="center">
         <HeaderButtons />
         <HeaderUserbox />
+        <Box
+          component="span"
+          sx={{
+            ml: 2,
+            display: { lg: 'none', xs: 'inline-block' }
+          }}
+        >
+          <Tooltip arrow title="Toggle Menu">
+            <IconButton color="primary" onClick={toggleSidebar}>
+              {!sidebarToggle ? (
+                <MenuTwoToneIcon fontSize="small" />
+              ) : (
+                <CloseTwoToneIcon fontSize="small" />
+              )}
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
     </HeaderWrapper>
   );

@@ -26,6 +26,8 @@ module.exports = () => {
   };
 };
 
+module.exports = withImages(redirects);
+
 module.exports = {
   typescript: {
     // !! WARN !!
@@ -35,4 +37,3 @@ module.exports = {
     ignoreBuildErrors: true,
   },
 }
-// module.exports = withImages(redirects);

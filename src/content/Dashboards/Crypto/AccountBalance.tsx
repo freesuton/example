@@ -7,21 +7,21 @@ import {
   useTheme,
   styled,
   Avatar,
-  Divider,
+  // Divider,
   alpha,
-  ListItem,
-  ListItemText,
-  List,
+  // ListItem,
+  // ListItemText,
+  // List,
   ListItemAvatar
 } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import TrendingUp from '@mui/icons-material/TrendingUp';
-import Text from 'src/components/Text';
-import { Chart } from 'src/components/Chart';
+// import Text from 'src/components/Text';
+// import { Chart } from 'src/components/Chart';
 import type { ApexOptions } from 'apexcharts';
 import { useState, useEffect } from 'react';
 import  Web3 from 'web3';
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import {useGlobalContext} from '../../../layouts/SidebarLayout/index';
 import DydxDeposit from '../../../../contracts/dydxDeposit.json';
 
@@ -66,11 +66,11 @@ const ListItemAvatarWrapper = styled(ListItemAvatar)(
 );
 
 function AccountBalance() {
+  const {accounts,connected, networkId } = useGlobalContext();
   const theme = useTheme();
-  const [balance, setBalance] = useState();
   const [value, setValue] = useState<any>();
   const [contract, setContract] = useState<any>();
-  const {accounts,connected, networkId } = useGlobalContext();
+  const [userBalance, setUserBalance] = useState<number>();
   const dydxDepositAddress = process.env.NEXT_PUBLIC_DYDX_DEPOSIT_MAINNET;
   const starkKey = process.env.NEXT_PUBLIC_STARK_KEY;
   const signature = process.env.NEXT_PUBLIC_SIGNATURE;
@@ -146,7 +146,6 @@ function AccountBalance() {
   const chartSeries = [10, 20, 25, 45];
 
   useEffect(() => {
-
     const connectContract = async () => {
       if(connected && window.ethereum){
         const web3 = new Web3(window.ethereum);
@@ -155,8 +154,20 @@ function AccountBalance() {
       }
     }
     connectContract();
-    // console.log(accounts);
+    getUserBalanceRatio();
+    console.log(process.env.NEXT_PUBLIC_USER_BALANCE_RATIO_API);
   }, [connected]);
+
+  async function getUserBalanceRatio(){
+    try {
+      const res = await fetch(process.env.NEXT_PUBLIC_USER_BALANCE_RATIO_API);
+      const data =await res.json();
+      setUserBalance(data.userBalance);
+      console.log(userBalance);
+    } catch (error) {
+      alert(error)
+    }
+  }
 
   async function sign(e){
     e.preventDefault();
@@ -192,14 +203,6 @@ function AccountBalance() {
 
   async function withdraw(e){
     e.preventDefault();
-    if(networkId != 1 || connected == false){
-      alert("Please Connect to ETH Mainnet")
-    }else{
-      const res = await fetch('https://mocki.io/v1/da0092f4-3123-4045-853d-4775f4589c97');
-      const data =await res.json();
-      setBalance(data.name);
-      console.log(data);
-    }
   }
 
   return (
@@ -213,19 +216,19 @@ function AccountBalance() {
               }}
               variant="h4"
             >
-              Account Balance  networkid: -{networkId}
+              Account Balance
             </Typography>
             <Box>
               <Typography variant="h1" gutterBottom>
-                $54,584.23{balance}
+                $ {userBalance}
               </Typography>
-              <Typography
+              {/* <Typography
                 variant="h4"
                 fontWeight="normal"
                 color="text.secondary"
               >
                 1.0045983485234 BTC
-              </Typography>
+              </Typography> */}
               <Box
                 display="flex"
                 sx={{
@@ -242,7 +245,7 @@ function AccountBalance() {
                   <TrendingUp fontSize="large" />
                 </AvatarSuccess>
                 <Box>
-                  <Typography variant="h4">+ $3,594.00</Typography>
+                  <Typography variant="h4">+ $394.00</Typography>
                   <Typography variant="subtitle2" noWrap>
                     this month
                   </Typography>
@@ -250,15 +253,24 @@ function AccountBalance() {
               </Box>
             </Box>
             <Grid container spacing={3}>
-            <Grid sm item>
-                <Button fullWidth variant="contained" onClick={(e) => sign(e)}>
-                   Sign
-                </Button>
-              </Grid>
+              <Grid sm item>
+                  <Button fullWidth variant="contained" onClick={(e) => sign(e)}>
+                    Sign
+                  </Button>
+                </Grid>
+
+                <Grid sm item>
+                  <Button fullWidth variant="contained" onClick={(e) => withdraw(e)}>
+                    Withdraw
+                  </Button>
+                </Grid>
+            </Grid>
+            <Grid container spacing={3} style={{marginTop:"1px"}}>
+
               <Grid sm item>
               <TextField
                     id="filled-number"
-                    label="Number"
+                    label="USDC Amount"
                     type="number"
                     InputLabelProps={{
                       shrink: true,
@@ -266,19 +278,16 @@ function AccountBalance() {
                     variant="filled"
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
+                    style={{paddingBottom: "2px",width:"100%"}}
+                    size="small" 
                   />
               </Grid>
               <Grid sm item >
-
                 <Button fullWidth variant="outlined" onClick={(e) => deposit(e)}>
                   Deposit
                 </Button>
               </Grid>
-              <Grid sm item>
-                <Button fullWidth variant="contained" onClick={(e) => withdraw(e)}>
-                  Withdraw
-                </Button>
-              </Grid>
+
             </Grid>
           </Box>
         </Grid>

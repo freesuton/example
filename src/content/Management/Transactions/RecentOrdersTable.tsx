@@ -42,15 +42,11 @@ interface Filters {
 
 const getStatusLabel = (cryptoOrderStatus: CryptoOrderStatus): JSX.Element => {
   const map = {
-    failed: {
-      text: 'Failed',
-      color: 'error'
-    },
-    completed: {
+    close: {
       text: 'Close',
       color: 'success'
     },
-    pending: {
+    open: {
       text: 'Open',
       color: 'warning'
     }
@@ -97,46 +93,61 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
 
   const statusOptions = [
     {
-      id: 'all',
-      name: 'All'
+      id: 'open',
+      name: 'Open'
     },
     {
       id: 'close',
       name: 'Close'
     },
-    {
-      id: 'open',
-      name: 'Open'
-    },
-    // {
-    //   id: 'orders',
-    //   name: 'Failed'
-    // }
   ];
 
   const [openPositions,setOpenPositions] = useState<[]>([]);
 
   useEffect(() => {
-    let res:any;
-    const request = async () => {
-      res = await fetch("/openPositions");
-      const data =await res.json();
-      setOpenPositions(data.positions)
-    }
-    request();
+    requestOpenPositions();
   }, []);
 
-  const handleStatusChange = (e: ChangeEvent<HTMLInputElement>): void => {
+  async function requestOpenPositions() {
+    try {
+      const res = await fetch("/api/openPositions");
+      const data =await res.json();
+      setOpenPositions(data.positions)
+    } catch (error) {
+      alert(error);
+    }
+
+  }
+
+  async function requestClosePositions() {
+    try {
+      const res = await fetch("/api/closedPositions");
+      const data =await res.json();
+      setOpenPositions(data.positions);
+    } catch (error) {
+      alert(error)
+    }
+  }
+
+  const handleStatusChange = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
+    e.preventDefault();
     let value = null;
 
     if (e.target.value !== 'all') {
       value = e.target.value;
     }
-
+    
     setFilters((prevFilters) => ({
       ...prevFilters,
       status: value
     }));
+    
+    if(e.target.value === 'open'){
+      requestOpenPositions();
+    }
+    else if(e.target.value === 'close'){
+      requestClosePositions();
+    }
   };
 
   const handleSelectAllCryptoOrders = (
@@ -194,6 +205,7 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
       {selectedBulkActions && (
         <Box flex={1} p={2}>
           <BulkActions />
+
         </Box>
       )}
       {!selectedBulkActions && (
@@ -201,9 +213,9 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
           action={
             <Box width={150}>
               <FormControl fullWidth variant="outlined">
-                {/* <InputLabel>Status</InputLabel> */}
-                {/* <Select
-                  value={filters.status || 'all'}
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value={filters.status || 'open'}
                   onChange={handleStatusChange}
                   label="Status"
                   autoWidth
@@ -213,7 +225,7 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
                       {statusOption.name}
                     </MenuItem>
                   ))}
-                </Select> */}
+                </Select>
               </FormControl>
             </Box>
           }
@@ -234,11 +246,12 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
                 />
               </TableCell> */}
               <TableCell>Market</TableCell>
-              <TableCell>Order ID</TableCell>
-              <TableCell>Profit and Loss</TableCell>
+              <TableCell >Profit and Loss</TableCell>
+              <TableCell >Side</TableCell>
+              
               <TableCell align="right">Amount</TableCell>
               <TableCell align="right">Status</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              {/* <TableCell align="right">Actions</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -277,17 +290,7 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
                       {/* {format(openPosition.createdAt, 'MMMM dd yyyy')} */}
                     </Typography>
                   </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {openPosition.side}
-                    </Typography>
-                  </TableCell>
+                  
                   <TableCell >
                     <Typography
                       variant="body1"
@@ -301,6 +304,17 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
                     </Typography>
                     <Typography variant="body2" color="text.secondary" noWrap>
                       {/* {openPosition.sourceDesc} */}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      color="text.primary"
+                      gutterBottom
+                      noWrap
+                    >
+                      {openPosition.side}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">
@@ -325,7 +339,7 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
                     {openPosition.status}
                     {/* {getStatusLabel(openPosition.status)} */}
                   </TableCell>
-                  <TableCell align="right">
+                  {/* <TableCell align="right">
                     <Tooltip title="Edit Order" arrow>
                       <IconButton
                         sx={{
@@ -352,7 +366,7 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
                         <DeleteTwoToneIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               );
             })}

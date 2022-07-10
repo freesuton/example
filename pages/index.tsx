@@ -8,12 +8,13 @@ import {
 } from '@mui/material';
 import type { ReactElement } from 'react';
 import BaseLayout from 'src/layouts/BaseLayout';
-
+import SidebarLayout from 'src/layouts/SidebarLayout';
 import Link from 'src/components/Link';
 import Head from 'next/head';
 
 import Logo from 'src/components/LogoSign';
 import Hero from 'src/content/Overview/Hero';
+import DashboardCrypto from './dashboards/crypto/index';
 
 
 const HeaderWrapper = styled(Card)(
@@ -42,7 +43,8 @@ function Overview() {
       <Head>
         <title>Propersubset Dashboard</title>
       </Head>
-      <HeaderWrapper>
+      <DashboardCrypto/>
+      {/* <HeaderWrapper>
         <Container maxWidth="lg">
           <Box display="flex" alignItems="center">
             <Logo />
@@ -66,9 +68,9 @@ function Overview() {
             </Box>
           </Box>
         </Container>
-      </HeaderWrapper>
-      <Hero />
-      <Container maxWidth="lg" sx={{ mt: 8 }}>
+      </HeaderWrapper> */}
+      {/* <Hero /> */}
+      {/* <Container maxWidth="lg" sx={{ mt: 8 }}>
         <Typography textAlign="center" variant="subtitle1">
           by{' '}
           <Link
@@ -79,7 +81,7 @@ function Overview() {
             Propersubset LLC
           </Link>
         </Typography>
-      </Container>
+      </Container> */}
     </OverviewWrapper>
   );
 }
@@ -87,5 +89,5 @@ function Overview() {
 export default Overview;
 
 Overview.getLayout = function getLayout(page: ReactElement) {
-  return <BaseLayout>{page}</BaseLayout>;
+  return <SidebarLayout>{page}</SidebarLayout>;
 };

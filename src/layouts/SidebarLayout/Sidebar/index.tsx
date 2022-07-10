@@ -92,7 +92,7 @@ function Sidebar() {
           </Button>
         </Box> */}
       </SidebarWrapper>
-      {/* <Drawer
+      <Drawer
         sx={{
           boxShadow: `${theme.sidebar.boxShadow}`
         }}
@@ -131,7 +131,7 @@ function Sidebar() {
             <SidebarMenu />
           </Scrollbar>
         </SidebarWrapper>
-      </Drawer> */}
+      </Drawer>
     </>
   );
 }

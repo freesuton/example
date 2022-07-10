@@ -79,7 +79,7 @@ const SidebarLayout: FC<SidebarLayoutProps> = ({ children }) => {
       });
       //detect account change
       window.ethereum.on('accountsChanged', accounts => {
-          
+          console.log("account changes");
           setAccounts(accounts);
           if(!accounts || accounts.length == 0){
               setConnected(false);

@@ -1,9 +1,6 @@
-import {useEffect,useState,useContext}  from 'react'
 import {useGlobalContext} from '../../../layouts/SidebarLayout/index'
 import { Typography, Avatar, Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-
-
 
 function PageHeader() {
   const {accounts,connected,networkId} = useGlobalContext();
@@ -32,15 +29,8 @@ function PageHeader() {
         <Typography variant="h3" component="h3" gutterBottom  >
           Address: {accounts}
         </Typography>
-        <Typography variant="h3" component="h3" gutterBottom>
-          ---connected?: {connected.toString()}
-        </Typography>
-        <Typography variant="h3" component="h3" gutterBottom  >
-          networkID: {networkId}
-        </Typography>
         <Typography variant="subtitle2">
           Today is a good day to start trading crypto assets!
-          32
         </Typography>
       </Grid>
     </Grid>
