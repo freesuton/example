@@ -9,7 +9,7 @@ module.exports  = {
     return [
       {
         source: '/:path*',
-        destination: 'http://pstest-env.eba-44kr6mrz.us-east-1.elasticbeanstalk.com//:path*',
+        destination: 'http://pstest-env.eba-44kr6mrz.us-east-1.elasticbeanstalk.com/:path*',
       },
     ];
   },
