@@ -196,7 +196,14 @@ function AccountBalance() {
       alert("Please Connect to ETH Mainnet")
     }else{
       try {
-        await contract.methods.deposit(depositValue*1000000,starkKey,positionId,'0x').send({from:accounts[0],gasLimit:187160});
+        await contract.methods.deposit(depositValue*1000000,starkKey,positionId,'0x')
+        .send({from:accounts[0],gasLimit:187160})
+        .on('receipt', async function(receipt){
+          if(receipt.status === true){
+            const res = await fetch(`/api/deposit?value=${depositValue}&address=${accounts[0]}&transactionHash=${receipt.transactionHash}`);
+            alert("Status: "+res.status);
+          }
+        });
         console.log(accounts[0]);
       } catch (error) {
         alert('Failed: '+error);
