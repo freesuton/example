@@ -16,6 +16,8 @@ import {
 } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import TrendingUp from '@mui/icons-material/TrendingUp';
+import Popover from "@mui/material/Popover";
+import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 // import Text from 'src/components/Text';
 // import { Chart } from 'src/components/Chart';
 import type { ApexOptions } from 'apexcharts';
@@ -24,6 +26,7 @@ import  Web3 from 'web3';
 import { ethers } from "ethers";
 import {useGlobalContext} from '../../../layouts/SidebarLayout/index';
 import DydxDeposit from '../../../../contracts/dydxDeposit.json';
+import ProperSubset from '../../../../contracts/ProperSubsetVault.json';
 
 
 declare var window: any
@@ -70,9 +73,13 @@ function AccountBalance() {
   const theme = useTheme();
   const [depositValue, setDepositValue] = useState<any>();
   const [withdrawValue, setWithdrawValue] = useState<any>();
+  const [confirmWithdrawValue, setConfirmWithdrawValue] = useState<any>();
   const [contract, setContract] = useState<any>();
+  const [properSubsetContract, setProperSubsetContract] = useState<any>();
   const [userBalance, setUserBalance] = useState<number>();
+  const [withdrawalBalance, setWithdrawalBalance] = useState<number>();
   const dydxDepositAddress = process.env.NEXT_PUBLIC_DYDX_DEPOSIT_MAINNET;
+  const psAddress = process.env.NEXT_PUBLIC_PS_VAULT_MAINNET;
   const starkKey = process.env.NEXT_PUBLIC_STARK_KEY;
   const signature = process.env.NEXT_PUBLIC_SIGNATURE;
   const positionId = process.env.NEXT_PUBLIC_POSITIONID;
@@ -151,7 +158,11 @@ function AccountBalance() {
       if(connected && window.ethereum){
         const web3 = new Web3(window.ethereum);
         const dydxDepositContract = new web3.eth.Contract((DydxDeposit as any).abi,dydxDepositAddress);
+        const psContract = new web3.eth.Contract((ProperSubset as any),psAddress);
+        const wBalance = await psContract.methods.withdrawalBalance(accounts[0]).call()/1000000;
         setContract(dydxDepositContract);
+        setProperSubsetContract(psContract);
+        setWithdrawalBalance(wBalance);
       }
     }
     connectContract();
@@ -228,6 +239,23 @@ function AccountBalance() {
     }
   }
 
+  async function confirmWithdrawal(e){
+    e.preventDefault();
+
+    if(networkId == 1 && connected == true && confirmWithdrawValue > 0){
+      try {
+        await properSubsetContract.methods.withdrawToUsers(confirmWithdrawValue * 1000000).send({from: accounts[0]});
+        alert("Value: "+ confirmWithdrawValue);
+      } catch (error) {
+        alert('Failed: '+error)
+      }
+    }else if(networkId != 1 || connected == false){
+      alert("Please Connect to ETH Mainnet")
+    }else if(withdrawValue <= 0){
+      alert("Withdrawal value should be greater than 0");
+    }
+  }
+
   return (
     <Card>
       <Grid spacing={0} container>
@@ -241,10 +269,13 @@ function AccountBalance() {
             >
               Account Balance
             </Typography>
+            
             <Box>
               <Typography variant="h1" gutterBottom>
-                $ {userBalance}
+                $ { parseFloat(userBalance).toFixed(6)}
               </Typography>
+              
+              
               {/* <Typography
                 variant="h4"
                 fontWeight="normal"
@@ -267,19 +298,87 @@ function AccountBalance() {
                 >
                   <TrendingUp fontSize="large" />
                 </AvatarSuccess>
-                <Box>
+                {/* <Box> */}
                   {/* <Typography variant="h4">+ $394.00</Typography>
                   <Typography variant="subtitle2" noWrap>
                     this month
                   </Typography> */}
-                </Box>
+                {/* </Box> */}
               </Box>
             </Box>
+            <Typography
+              sx={{
+                pb: 3
+              }}
+              variant="h4"
+            >
+              Withdrawal Balance
+            </Typography>
+            <Typography variant="h1" gutterBottom>
+                $ {withdrawalBalance}
+              </Typography>
+              
+              <Box
+                display="flex"
+                sx={{
+                  py: 4
+                }}
+                alignItems="center"
+              >
+              </Box>
             <Grid container spacing={3}>
               <Grid sm item>
-                  <Button fullWidth variant="contained" onClick={(e) => sign(e)}>
-                    Sign The Agreement
-                  </Button>
+
+                  <PopupState variant="popover" popupId="demo-popup-popover">
+                    {(popupState) => (
+                      <div>
+                        <Button fullWidth variant="contained" {...bindTrigger(popupState)}>
+                        Sign The Agreement
+                        </Button>
+                        <Popover
+                        style={{width: '70%'}}
+                          {...bindPopover(popupState)}
+                          anchorOrigin={{
+                            vertical: "top",
+                            horizontal: "center"
+                          }}
+                          transformOrigin={{
+                            vertical: "bottom",
+                            horizontal: "center"
+                          }}
+                        >
+                          <Typography sx={{ p: 2 }} >
+                            <h1>ProperSubset Carbon Fund II</h1>
+                            <h2>Manager:</h2>
+                            <h4> - ProperSubset (The "General Partners")</h4>
+                            <h2>Target Amount:</h2>
+                            <h4> - USDT 500,000</h4>
+                            <h2>Subsequent Closings:</h2>
+                            <h4> - Additional closings may occur at the discretion of the General Partner</h4>
+                            <h2>Term of the Fund :</h2>
+                            <h4>- 180 calendar days from the date where the principals are deployed to trade by the Team (the Client shall receive email confirmation from the Team on the date of deployment), with extensions at the discretion of the General Partner.</h4>
+                            <h2>Lockup Period:</h2>
+                            <h4> -	First 90 calendar days</h4>
+                            <h2>Investment Policy:</h2>
+                            <h4> - The objective of the Fund is to provide attractive risk adjusted return by investing in a diversified portfolio of crypto currencies (including spot currency, futures and options contracts)</h4>
+                            <h2>Management Fee:</h2>
+                            <h4> - Waived for early adoptors</h4>
+                            <h2>Performance Fee:</h2>
+                            <h4> - 20% of the returns (for the portion of return {`<`} 20%) 30% of the returns (for the portion of return {`>`}= 20%)</h4>
+                            <h2>Redumptions:</h2>
+                            <h4> - Redemptions are allowed only once during the term of the fund. If the redemption happens within the lock up period, then a 2% fee on the initial invested capital is charged. There is no fee for redemption after the lock up period.</h4>
+                            <h2>Reporting and Disclosure:</h2>
+                            <h4> - Investors are entitled to get regular updates (at least monthly) of fund performance</h4>
+                            <h2>Fund Transfer:</h2>
+                            <h4> - We accept only USDC wires. Please check the deposit instructions for details</h4>
+                          </Typography>
+                          <Button fullWidth variant="contained" onClick={(e) => sign(e)} >
+                              Confirm
+                          </Button>
+                        </Popover>
+                      </div>
+                    )}
+                  </PopupState>
                 </Grid>
             </Grid>
             <Grid container spacing={3} style={{marginTop:"1px"}}>
@@ -328,7 +427,30 @@ function AccountBalance() {
                   </Button>
                 </Grid>
             </Grid>
+            <Grid  container spacing={3} style={{marginTop:"1px"}}>
+            <Grid sm item>
+              <TextField
+                    id="filled-number"
+                    label="USDC Amount"
+                    type="number"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    variant="filled"
+                    value={confirmWithdrawValue}
+                    onChange={(e) => setConfirmWithdrawValue(e.target.value)}
+                    style={{paddingBottom: "2px",width:"100%"}}
+                    size="small" 
+                  />
+              </Grid>
+                <Grid sm item>
+                  <Button fullWidth variant="outlined" onClick={(e) => confirmWithdrawal(e)}>
+                    Confirm Withdrawal
+                  </Button>
+                </Grid>
+            </Grid>
           </Box>
+          
         </Grid>
         <Grid
           sx={{
